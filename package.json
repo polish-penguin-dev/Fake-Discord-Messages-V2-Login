@@ -1,0 +1,17 @@
+{
+  "dependencies": {
+    "discord.js": "^14.14.1",
+    "express": "^4.18.2",
+    "mongodb": "^6.3.0"
+  },
+  "name": "fake-discord-messages-v2-login",
+  "type": "module",
+  "description": "The login system for fake-discord-messages.",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}
