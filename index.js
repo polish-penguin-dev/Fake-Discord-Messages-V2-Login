@@ -15,16 +15,17 @@ import { bot } from "./bot/index.js";
 await deploy();
 bot();
 
-//verify route
+// Create a single MongoClient instance for the entire application
+const url = process.env.MONGO_URL;
+const DBclient = new MongoClient(url);
+
+// Verify route
 app.get("/verify", async (req, res) => {
     const token = req.query.token;
 
     if (!token) {
         return res.status(400).json({ error: "Token is required" });
     }
-
-    const url = process.env.MONGO_URL;
-    const DBclient = new MongoClient(url);
 
     try {
         await DBclient.connect();
@@ -39,7 +40,7 @@ app.get("/verify", async (req, res) => {
             return res.status(404).json({ error: "Token not found" });
         }
 
-        if(user.expires > new Date()) {
+        if (user.expires > new Date()) {
             await collection.updateOne(
                 { token: token },
                 { $unset: { expires: "" } }
@@ -51,9 +52,39 @@ app.get("/verify", async (req, res) => {
 
             return res.status(401).json({ error: "Token has expired" });
         }
-    } catch(err) {
+    } catch (err) {
         console.log(err);
-    } finally {
-        DBclient.close();
     }
+});
+
+// Identify route
+app.get("/identify", async (req, res) => {
+    const token = req.query.token;
+
+    if (!token) {
+        return res.status(400).json({ error: "Token is required" });
+    }
+
+    try {
+        await DBclient.connect();
+        console.log("Connected to database!");
+
+        const db = DBclient.db("FakeDiscordMessages");
+        const collection = db.collection("Users");
+
+        const user = await collection.findOne({ token: token });
+
+        if (!user) {
+            return res.status(404).json({ error: "Token not found" });
+        }
+
+        return res.json({ userId: user.id });
+    } catch (err) {
+        console.log(err);
+    }
+});
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
 });
