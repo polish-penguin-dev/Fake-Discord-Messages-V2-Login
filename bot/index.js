@@ -29,7 +29,8 @@ export function bot() {
                 username: interaction.user.username,
                 token: token,
                 expires: new Date(Date.now() + 3600000)
-            });
+            })
+            .catch(err => console.error(err));
     
             if(result.insertedCount === 1) {
                 const loginEmbed = new EmbedBuilder()
