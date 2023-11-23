@@ -4,7 +4,10 @@
 
 import { MongoClient } from "mongodb";
 import express from "express";
+import cors from "cors";
 const app = express();
+
+app.use(cors());
 
 import { deploy } from "./bot/deploy.js";
 import { bot } from "./bot/index.js";
