@@ -1,6 +1,6 @@
 import { REST, Routes } from "discord.js";
 
-async function deploy() {
+export async function deploy() {
     const commands = [
         {
             name: "login",

@@ -2,7 +2,7 @@ import { Client, GatewayIntentBits, EmbedBuilder } from "discord.js";
 import crypto from "crypto";
 import { MongoClient } from "mongodb";
 
-function bot() {
+export function bot() {
     const DiscordClient = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMembers] });
 
     DiscordClient.on("ready", () => {
@@ -60,5 +60,3 @@ function bot() {
     
     DiscordClient.login(process.env.token);
 }
-
-module.exports = bot;
