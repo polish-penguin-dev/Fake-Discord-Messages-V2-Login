@@ -13,49 +13,55 @@ export function bot() {
         if(!interaction.isChatInputCommand()) return;
     
         if(interaction.commandName === "login") {
-            const token = crypto.randomUUID();
+            try {
+                const token = crypto.randomUUID();
     
-            //Set token in the database.
-            const url = process.env.MONGO_URL;
-            const DBclient = new MongoClient(url);
+                //Set token in the database.
+                const url = process.env.MONGO_URL;
+                const DBclient = new MongoClient(url);
     
-            await DBclient.connect();
-            console.log("Connected to database!");
+                await DBclient.connect();
+                console.log("Connected to database!");
     
-            const db = DBclient.db("FakeDiscordMessages");
-            const collection = db.collection("Users");
+                const db = DBclient.db("FakeDiscordMessages");
+                const collection = db.collection("Users");
     
-            const result = await collection.insertOne({
-                username: interaction.user.username,
-                token: token,
-                expires: new Date(Date.now() + 3600000)
-            })
-            .catch(err => console.error(err));
-    
-            if(result.insertedCount === 1) {
-                const loginEmbed = new EmbedBuilder()
-                .setTitle("Login to FakeDiscordMessages")
-                .setDescription(`[Login](https://fakediscordmsgs.pingwinco.xyz/?token=${token}). This link will expire in 1 hour.`)
-                .setColor("#7289da")
-                .setFooter({ text: "FDM Login System V1" });
-    
-                await interaction.reply({ 
-                    ephemeral: true,
-                    embeds: [loginEmbed]
+                const result = await collection.insertOne({
+                    username: interaction.user.username,
+                    token: token,
+                    expires: new Date(Date.now() + 3600000)
                 });
-            } else {
-                const failEmbed = new EmbedBuilder()
-                .setTitle("Failed to generate a FakeDiscordMessages Login Link.")
-                .setDescription("An error has occured. Please try again later.")
-                .setColor("#7289da")
-                .setFooter({ text: "FDM Login System V1" });
+
+                console.log(result.insertedCount);
+
+                if (result.insertedCount === 1) {
+                    const loginEmbed = new EmbedBuilder()
+                    .setTitle("Login to FakeDiscordMessages")
+                    .setDescription(`[Login](https://fakediscordmsgs.pingwinco.xyz/?token=${token}). This link will expire in 1 hour.`)
+                    .setColor("#7289da")
+                    .setFooter({ text: "FDM Login System V1" });
     
-                await interaction.reply({ 
-                    ephemeral: true,
-                    embeds: [failEmbed]
-                });
+                    await interaction.reply({ 
+                        ephemeral: true,
+                        embeds: [loginEmbed]
+                    });
+                } else {
+                    const failEmbed = new EmbedBuilder()
+                    .setTitle("Failed to generate a FakeDiscordMessages Login Link.")
+                    .setDescription("An error has occured. Please try again later.")
+                    .setColor("#7289da")
+                    .setFooter({ text: "FDM Login System V1" });
+    
+                    await interaction.reply({ 
+                        ephemeral: true,
+                        embeds: [failEmbed]
+                    });
+                }
+            } catch(err) {
+                console.log(err);
+            } finally {
+                DBclient.close();
             }
-            
         }
     });
     
