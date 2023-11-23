@@ -20,5 +20,3 @@ export async function deploy() {
         console.error(err);
     }
 }
-
-module.exports = deploy;
