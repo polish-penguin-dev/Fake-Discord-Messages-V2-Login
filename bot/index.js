@@ -26,7 +26,7 @@ export function bot() {
                 const collection = db.collection("Users");
     
                 const result = await collection.insertOne({
-                    username: interaction.user.username,
+                    id: interaction.user.id,
                     token: token,
                     expires: new Date(Date.now() + 3600000)
                 });
